@@ -5,6 +5,8 @@ import { apiGetMethod, apiMethod } from '../general/request'
 import { wait } from '@testing-library/user-event/dist/utils'
 import weatherData from '../apiRequest.json'
 import Days from './days'
+import Alert from './alert'
+import { useNavigate } from 'react-router-dom'
 // import env from 'react-dotenv'
 
 export default function Home() {
@@ -16,6 +18,11 @@ export default function Home() {
   const {cities,setCities,history,setHistory,city,setCity,History}=useContext(UserContex)
   const arrayDays=["מחר","בעוד יומים","בעוד שלושה ימים","בעוד ארבעה ימים"]
   const [isChange,setisChange]=useState(false)
+  const [error,setError]=useState({
+    titel:"",
+    message:""
+  })
+  const navigate=useNavigate();
 
 
   useEffect( ()=>{
@@ -24,7 +31,8 @@ export default function Home() {
  
   const onLoad=async ()=>{
     
-    try{
+    try{          
+    await loderCities()
       if(history.length<1 || isChange==true){
           const resp= await getLongLat()
           if (resp.data) {  
@@ -39,9 +47,16 @@ export default function Home() {
                   console.log(error);
                 }
                 setisChange(false)
+               }else{
+                setError(prevAlert=>{
+                  return{
+                    ...prevAlert,["message"]:"עיר הזו אינה נמצאת ברשימה"
+                  }
+                })
                }
             }
         }else{   
+          console.log(history);
           setCity(history[history.length-1].city)
           setWeather(history[history.length-1].daily)
         }
@@ -51,6 +66,18 @@ export default function Home() {
   } 
 }
 
+ const loderCities=async()=>{
+    console.log(localStorage.getItem("user"));
+   try{
+    let resp=await apiMethod("http://localhost:3001/getAllCities","get",{},JSON.parse(localStorage.getItem("user")))
+    setCities(resp.data)
+    let cityFind=resp.data.find((obj)=>obj.city==="Jerusalem");
+    setCity(cityFind)
+
+  }catch(error){
+    console.log(error);
+  }
+   } 
   
   const getLongLat = async ()=>{
     const headers=JSON.parse(localStorage.getItem("user"))
@@ -124,6 +151,8 @@ export default function Home() {
     return mone;
   }
 
+
+
   // const History=(item)=>{
   // let historyTemp=history;
   // historyTemp.push(item);
@@ -134,10 +163,11 @@ export default function Home() {
   // }
 
   return (
-    <React.Fragment>
+    <React.Fragment> 
     {
     (weather.length>0)?
     <div className='container white master'>
+          {(error.message.length>0)&&<Alert titel={error.titel} message={error.message} setError={setError}></Alert>}
         <div>
           <h2>שלום: {user.First_Name} {user.Last_Name}</h2>
           <div className='d-flex align-items-center justify-content-center'>
@@ -148,16 +178,19 @@ export default function Home() {
           </select>
         
           <button className=' btn justify-content-center m-1 d-flex' onClick={()=>{
-            // setCity(selectRef.current.value);
-            setisChange(true);
-            setCity(cities[selectRef.current.selectedIndex])
+            // setCity(selectRef.current.value);  
+             if(selectRef.current.value!==city.city){
+                setCity(cities[selectRef.current.selectedIndex])
+             }
+           setisChange(true);
+          
           }}>
           <svg className='' xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
           </svg>
           </button>
        </div>
-       
+     
                 <div className='row justify-content-center'>
                   <div className='col-5 m-2 align-items-center'>
                     <img src={getImageByTemp(0)} width="70%"></img>
@@ -175,7 +208,7 @@ export default function Home() {
                   </div>
                 </div>
 
-    
+              
     </div>
      </div> :
       <div className="d-flex justify-content-center">
@@ -183,7 +216,11 @@ export default function Home() {
              <span className="visually-hidden">Loading...</span>
         </div>
         <span>loding...</span>
-       </div>}
+     </div>
+    
+    }
+   
+
     </React.Fragment>
 
   )

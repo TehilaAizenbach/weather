@@ -19,41 +19,38 @@ export default function Login() {
     titel:"",
     message:""
   })
-
-  useEffect(()=>{
-    onLoade()
- 
-  },[])
-
   const [formData,setFormData]=useState({
     user_name:"",user_mispar_ishi:"",
   })
 
+  useEffect(()=>{
+const f=async ()=>{
+   await onLoade()
+}
+   f()
+ console.log(formData);
+  },[])
+
+
   const onLoade=async()=>{
-    if (localStorage["user"]) {
-      console.log(JSON.parse(localStorage.getItem("user")));
-      await setFormData(JSON.parse(localStorage.getItem("user")));
-      login()
-    }   
-    
-    
-    
-   
+    if (localStorage["user"])
+    {
+      console.log(localStorage["user"]);
+    await setFormData(
+       prevFormData=>{
+       return {...prevFormData,
+         ["user_mispar_ishi"]:localStorage["user"]["user_mispar_ishi"],["user_name"]:localStorage["user"]["user_name"]}
+     })
+
+     console.log(formData); 
+     login(JSON.parse(localStorage.getItem("user")))
+   }
+     
+
   }
   const {user,setUser,setCities,cities,setCity}=useContext(UserContex)
 
-  const loderCities=async()=>{
-    console.log(localStorage.getItem("user"));
-   try{
-    let resp=await apiMethod("http://localhost:3001/getAllCities","get",{},JSON.parse(localStorage.getItem("user")))
-    setCities(resp.data)
-    let cityFind=resp.data.find((obj)=>obj.city==="Jerusalem");
-    setCity(cityFind)
-
-  }catch(error){
-    console.log(error);
-  }
-   } 
+ 
 
 
   
@@ -68,20 +65,22 @@ export default function Login() {
 
   const onSubmit=(event)=>{
       event.preventDefault();
-      login()
+      login(formData)
       
   }
 
-  const login=async ()=>{
-  setLoding(true)
+  const login=async (user)=>{
+    console.log(formData);
+    setVlidatationUsername(usernameValidation(user.user_name)) 
+    if (validationuserName) {
+       setLoding(true)
     try {
-        setVlidatationUsername(usernameValidation(formData.user_name)) 
-        let resp= await apiMethod('http://localhost:3001/login','post',{ },formData)
+       
+        let resp= await apiMethod('http://localhost:3001/login','post',{ },user)
         if ( resp.status==200) {
           
-          localStorage.setItem("user",JSON.stringify(formData))
+          localStorage.setItem("user",JSON.stringify(user))
           setUser(resp.data);
-          await loderCities()
 
         
           navigate("/home")
@@ -98,18 +97,23 @@ export default function Login() {
       await setLoding(false) 
       setError({titel:"שגיאת התחברות", message:"אחד מהנתונים שהוקשו שגוי"})
     }
+    }else{
+      setError({titel:"שגיאת התחברות", message:"אחד מהנתונים שהוקשו שגוי"})
+    }
+ 
     
   }
 
   return (
   <React.Fragment>
-   <div className='container'>
+   <div className='container login'>
     {(!loding &&error.message=="")&&
     <form className='container bg-light card ' onSubmit={onSubmit} >
 
       <div className='mb-3'>
         <label className='form-lable'>שם משתמש</label>
-        <input className='form-control' name='user_name' onChange={handleChange}></input>
+        <input className='form-control' name='user_name' onChange={(e)=>{handleChange(e);
+         setVlidatationUsername(usernameValidation(e.target.value))} }></input>
         {(!validationuserName)? <span className='text-danger'>שם משתמש  חייב להיות באנגילית עם אות  גדולה אחת לפחות ומקסימום 3 ספרות</span>:""}
       </div>
 

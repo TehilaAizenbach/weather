@@ -19,14 +19,14 @@ export default function History() {
      
     }
 
-    const deselect=()=>{
-      History(history[history.length-2])
+    const  deselect=async ()=>{
+     await History(history[history.length-2])
       navigate('/home')
     }
 
     const selectMainPage=(i)=>{
         History(history[i])
-        navigate('/home')
+      
 
     }
   return (
@@ -46,7 +46,8 @@ export default function History() {
             <td className='td'>{item.city.continent}</td>
             <td className='td'>
                 <ul className='header--ul'> 
-                    {(item.city.city==="Jerusalem")&&<li className='header--li' onClick={()=>{selectMainPage(index)}}><Link className='link'>הפוך לראשי</Link></li>}
+                    {(index!=history.length-1)&&<li className='header--li' onClick={async ()=>{await selectMainPage(index)
+                      navigate('/home')}}><Link className='link'>הפוך לראשי</Link></li>}
                     {(index==history.length-1)&&<li className='header--li'>
                         <Link className='link activ--link' onClick={deselect()}>ביטול בחירה</Link>
                     </li>}

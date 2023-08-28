@@ -9,25 +9,46 @@ export  function ContexProvider({children}) {
     const [cities,setCities]=useState([])
     const [history,setHistory]=useState([]);
     const [city,setCity]=useState({})
+    const [selectedSoldiers,setselectedSoldiers]=useState([]);
+    const [selectboxOpen,setSelectboxOpen]=useState(false)
     
   const getDefulteValue=()=>{
    setCity(cities.find((obj)=>obj.city==="Jerusalem"));
   }
 
-   const History=(item)=>{
-    let historyTemp=history;
-    historyTemp.push(item);
-    if (historyTemp.length>5) {
-      historyTemp.shift();
+  const getValue=(object)=>{
+    return object[getKey(object)]
+ }
+ const getKey=(object)=>{
+  return getKeys(object)[0];
+ }
+
+ const getKeys=(object)=>{
+  return Object.keys(object)
+ }
+
+ const removeFirstItem=async ()=>{
+  await setHistory(prev=>{
+let temp=[...prev];
+ temp.shift()
+ return temp;
+  })
+ }
+   const History=async (item)=>{
+   let historyTemp=history.filter(cityObj=>cityObj.city.city!==item.city.city);
+   await setHistory(historyTemp);
+   await setHistory(prev=>[...prev,item]);
+    if (history.length>5) {
+      removeFirstItem()
     }
-    setHistory(historyTemp)}
+    }
     
   return (
-    <UserContex.Provider value={{user,setUser,cities,setCities,history,setHistory,city,setCity,History,getDefulteValue}}>
+    <UserContex.Provider value={{user,setUser,cities,setCities,history,setHistory,city,setCity,History,getDefulteValue,getValue,getKey,getKeys,selectedSoldiers,setselectedSoldiers,selectboxOpen,setSelectboxOpen}}>
         {children}
     </UserContex.Provider>
   )
 
-}
+  }
 
   export default UserContex;
