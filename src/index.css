@@ -212,7 +212,7 @@ justify-content: center;
 }
 .soliders-list{
   padding: 20px;
-  height: 400px;
+  max-height: 25vh;
   overflow-y: auto;
 }
 .icon{
