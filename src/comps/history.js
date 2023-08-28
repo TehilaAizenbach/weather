@@ -8,10 +8,12 @@ export default function History() {
     const navigate = useNavigate();
 
     const deleteFromHistory=(i)=>{
-     let historySearch=history;
-     console.log(historySearch[i]);
-     historySearch.splice(i,1);
-     setHistory(historySearch)
+     setHistory(prev=>{
+      let historySearch=[...prev];
+      historySearch.splice(i,1);
+      console.log(historySearch);
+      return historySearch;
+     })
 
      if (history.length<1) {
            getDefulteValue()
@@ -26,12 +28,10 @@ export default function History() {
 
     const selectMainPage=(i)=>{
         History(history[i])
-      
-
     }
   return (
     <div className='container'>
-        <table className='container'>
+        <table>
           <tr className='th'>
             <th  className='td'>עיר</th>
             <th className='td'>מדינה</th>
@@ -49,7 +49,7 @@ export default function History() {
                     {(index!=history.length-1)&&<li className='header--li' onClick={async ()=>{await selectMainPage(index)
                       navigate('/home')}}><Link className='link'>הפוך לראשי</Link></li>}
                     {(index==history.length-1)&&<li className='header--li'>
-                        <Link className='link activ--link' onClick={deselect()}>ביטול בחירה</Link>
+                        <Link className='link activ--link' onClick={()=>{deselect()}}>ביטול בחירה</Link>
                     </li>}
                     <li className='header--li'  onClick={()=>{deleteFromHistory(index)}}>
                       מחיקה מההיסטוריה

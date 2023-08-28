@@ -37,7 +37,10 @@ let temp=[...prev];
    const History=async (item)=>{
    let historyTemp=history.filter(cityObj=>cityObj.city.city!==item.city.city);
    await setHistory(historyTemp);
-   await setHistory(prev=>[...prev,item]);
+   await setHistory(prev=>{let temp=[...prev,item]
+    console.log(temp);
+    return temp});
+   console.log(history);
     if (history.length>5) {
       removeFirstItem()
     }

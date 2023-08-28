@@ -24,7 +24,12 @@ export default function Home() {
   })
   const navigate=useNavigate();
 
-
+useEffect(()=>{
+const f=async ()=>{
+  await loderCities()
+} 
+f()
+},[])
   useEffect( ()=>{
     onLoad()
   },[city])
@@ -32,8 +37,11 @@ export default function Home() {
   const onLoad=async ()=>{
     
     try{          
-    await loderCities()
+    
+    console.log(history.length);
+    console.log(isChange);
       if(history.length<1 || isChange==true){
+       
           const resp= await getLongLat()
           if (resp.data) {  
                 console.log(resp.data);
@@ -42,11 +50,12 @@ export default function Home() {
                 try { 
                   const daily=data.daily
                   setWeather(daily)
-                  History({city,daily});
+                  await History({city,daily});
+                
                 } catch (error) {
                   console.log(error);
                 }
-                setisChange(false)
+                await setisChange(false)
                }else{
                 setError(prevAlert=>{
                   return{
@@ -56,9 +65,9 @@ export default function Home() {
                }
             }
         }else{   
-          console.log(history);
           setCity(history[history.length-1].city)
           setWeather(history[history.length-1].daily)
+          
         }
       }
   catch(error){
@@ -77,7 +86,7 @@ export default function Home() {
   }catch(error){
     console.log(error);
   }
-   } 
+  } 
   
   const getLongLat = async ()=>{
     const headers=JSON.parse(localStorage.getItem("user"))
