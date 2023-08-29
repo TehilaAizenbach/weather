@@ -25,6 +25,7 @@ export default function Mador() {
       await apiMethod("http://localhost:3001/getAllSoldiers","get",{},headers).then(async resp=>{
        await setSoliders(resp.data)
     }).catch(err=>{
+   
       console.log(err);
     })
     }

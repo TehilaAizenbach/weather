@@ -8,6 +8,7 @@ import { apiGetMethod, apiMethod } from '../general/request'
 import UserContex from '../contex'
 // import { useNavigate } from 'react-router-dom'
 import FooterPopup from './footerPopup'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -16,7 +17,7 @@ export default function Soliders(props) {
   const [selectValue,setSelectValue]=useState({City:"עיר"})
   const [solidersArray,setSolidersArray]=useState([])
   const [dicSoliders,setDicSolider]=useState({})
-  const {selectedSoldiers,setselectedSoldiers}=useContext(UserContex)
+  const {selectedSoldiers,setselectedSoldiers,user}=useContext(UserContex)
   const [solider,setSolider]=useState({
     Age:22,
     City:"רמת גן",
@@ -30,8 +31,9 @@ export default function Soliders(props) {
     Role:"מפתח תוכנה",
     User_Name:""
   })
-  const {error,setError}=props
-
+  const {error,setError}=props;
+  const [logOut,setLogOut]=useState(false);
+  const navigate=useNavigate()
 
  useEffect(()=>{
  onload()
@@ -105,14 +107,34 @@ return(dic);
   }
 
   const deleteSelectedsoliders=async ()=>{
-    let arr=await solidersArray.filter(solider=>!selectedSoldiers.includes(solider));
+   if(selectedSoldiers.some((solider=>solider.User_Name==user.User_Name && solider.Mispar_Ishi==user.Mispar_Ishi)))
+    {
+      setError(prev=>{
+        return {...prev,["titel"]:"",["message"]:"אינך יכול להסיר את עתמך כל עוד הנך מחובר"}
+      })
+    }else{
+       setSolidersArray(
+      prev=>{
+        let tempsolider=[...prev];
+       tempsolider= tempsolider.filter(solider=>!selectedSoldiers.includes(solider));
+       return tempsolider;
+      }
+    )
+    }
+
+    // let arr=await solidersArray.filter(solider=>!selectedSoldiers.includes(solider));
+    // console.log(arr);
+
     setselectedSoldiers([])
-    await setSolidersArray(arr)
+    }
+  
+   
+    // await setSolidersArray(arr)
     // let selectKey=getKeys(selectValue);
     // mapSoliders(selectKey);
     // deselectAll();
     // refresh();
-  }
+  
 
   const refresh=  ()=>{
     const f=async ()=>{
