@@ -5,10 +5,11 @@ import UserContex from '../contex'
 
 export default function Header() {
 
- const {history,user}=useContext(UserContex)
+ const {history,user,setUser}=useContext(UserContex)
  const navigate=useNavigate()
  const logOut=()=>{
   localStorage.clear()
+  setUser(null)
   navigate("/")
     }
   return (
