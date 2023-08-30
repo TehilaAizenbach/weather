@@ -101,7 +101,7 @@ export default function SoliderForm(props) {
         </div>
         <div>
             <label>מין</label>
-        <select className="select" name='Gender' value={"מין"} onChange={(e)=>{
+        <select className="select" name='Gender' defaultValue={"זכר"} onChange={(e)=>{
             handleChange(e)}}>
             <option>זכר</option>
             <option>נקבה</option>
