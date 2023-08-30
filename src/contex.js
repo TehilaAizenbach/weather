@@ -5,7 +5,7 @@ const UserContex= createContext()
   
 
 export  function ContexProvider({children}) {
-    const [user,setUser]=useState({})
+    const [user,setUser]=useState(null)
     const [cities,setCities]=useState([])
     const [history,setHistory]=useState([]);
     const [city,setCity]=useState({})

@@ -5,7 +5,7 @@ import UserContex from '../contex'
 
 export default function Header() {
 
- const {history}=useContext(UserContex)
+ const {history,user}=useContext(UserContex)
  const navigate=useNavigate()
  const logOut=()=>{
   localStorage.clear()
@@ -13,6 +13,7 @@ export default function Header() {
     }
   return (
     <div className='header'>
+      {(user)&&
         <nav className='d-flex'>
             <ul className='header--ul'>
                 <li className='header--li'>
@@ -25,6 +26,7 @@ export default function Header() {
               <li className='header--li ' onClick={logOut}>התנתקות</li>
             </ul>
         </nav>
+        }
     </div>
   )
 }
